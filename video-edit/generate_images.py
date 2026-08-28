@@ -48,47 +48,62 @@ STYLE = (
     "Vertical 9:16 composition that fills the entire frame, subject centered."
 )
 
-# 6 beats del guion -> 6 imagenes. 'text' es lo que se dice; 'scene' es el dibujo.
+# Regla dura anti-texto: el modelo tiende a escribir palabras en ingles, no queremos eso.
+NO_TEXT = (
+    " IMPORTANT: this is a PURELY VISUAL illustration. Do NOT write any text, words, "
+    "letters, numbers, captions, labels or titles anywhere in the image. Buttons and "
+    "screens must be blank. Communicate the idea only through the drawing."
+)
+
+# 6 beats del guion -> 6 imagenes. Describimos SOLO la escena a dibujar (sin meta-texto).
+# keep_text: si es True, se permite el texto minimo definido en el propio prompt.
 SCENES = [
     {
         "id": "0_hook_cara",
-        "prompt": "A stick figure holding up a smartphone to film themselves but covering "
-                  "their own face with one hand, looking shy/reluctant, a small question mark "
-                  "and a 'record' dot above. Idea: wanting to make content but not wanting to "
-                  "show your face.",
+        "prompt": "A single stick figure holding up a smartphone to film themselves but covering "
+                  "their own face with the other hand, looking shy and reluctant, a small teal "
+                  "'record' dot glowing above the phone.",
     },
     {
         "id": "1_ideas_miedo",
-        "prompt": "A stick figure with many lightbulbs and thought bubbles floating around its "
-                  "head (full of ideas), but standing frozen in front of a big 'PUBLISH' button, "
-                  "hesitating, a nervous sweat drop. Idea: people have ideas but are afraid to "
-                  "expose themselves.",
+        "prompt": "A single stick figure standing nervously with a worried face and one sweat drop, "
+                  "its head overflowing with many lightbulbs and idea doodles floating all around; "
+                  "the figure stands frozen in front of a big blank rounded push-button (the button "
+                  "surface is completely empty, no writing).",
     },
     {
         "id": "2_avatar_habla",
-        "prompt": "A stick-figure person on the left with an arrow pointing to a friendly digital "
-                  "avatar 'twin' of the same figure inside a phone screen on the right, the avatar "
-                  "has little speech lines coming out of its mouth. Idea: an avatar that speaks for you.",
+        "prompt": "On the left a stick-figure person; a big curved arrow points from them to a "
+                  "smartphone on the right; inside the phone screen there is a friendly identical "
+                  "stick-figure avatar twin with little curved speech/sound lines coming from its mouth.",
     },
     {
         "id": "3_real_vos_decidis",
-        "prompt": "A realistic-looking avatar face inside a phone screen with sound waves next to it, "
-                  "and a small hand/cursor choosing words from a little list, thumbs up. "
-                  "Idea: it looks real, it sounds real, and YOU decide what it says.",
+        "prompt": "A smartphone held upright with a friendly stick-figure avatar face smiling on the "
+                  "screen and curved sound waves radiating on both sides; a small pointing hand/finger "
+                  "tapping a little blank toggle next to it, a tiny teal check mark.",
     },
     {
         "id": "4_crece_sin_cara",
-        "prompt": "A rising growth arrow and a bar chart going up, next to a faceless avatar head "
-                  "(blank oval, no face) with a heart and a rising follower counter. "
-                  "Idea: accounts are already growing this way without ever showing a face.",
+        "prompt": "A big bold upward arrow next to a rising bar chart with an ascending trend line, "
+                  "and below them a faceless avatar head (a blank oval with NO facial features) with a "
+                  "small teal heart on its chest and a rising meter bar going up.",
     },
     {
         "id": "5_cta_comenta",
-        "prompt": "A big hand-drawn comment box containing the handwritten word \"avatar\", with a "
-                  "big arrow and a pointing finger aiming down at it. Idea: comment the word "
-                  "'avatar' below to learn how to build your own.",
+        "keep_text": True,
+        "prompt": "A hand-drawn rounded speech/comment bubble with ONLY the single handwritten "
+                  "lowercase word \"avatar\" inside it (dusty teal outline), and directly below the "
+                  "bubble a big bold hand-drawn arrow pointing straight DOWN, plus a simple pointing "
+                  "finger. The ONLY text anywhere in the whole image is that one word 'avatar' inside "
+                  "the bubble — no other letters, words, numbers or captions anywhere.",
     },
 ]
+
+
+# User-Agent de navegador: los hosts detras de Cloudflare rechazan el UA de urllib.
+UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+      "(KHTML, like Gecko) Chrome/120.0 Safari/537.36")
 
 
 def _post_json(url, payload, api_key, timeout=60):
@@ -96,6 +111,7 @@ def _post_json(url, payload, api_key, timeout=60):
     req = urllib.request.Request(url, data=data, method="POST")
     req.add_header("Authorization", f"Bearer {api_key}")
     req.add_header("Content-Type", "application/json")
+    req.add_header("User-Agent", UA)
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
@@ -103,15 +119,19 @@ def _post_json(url, payload, api_key, timeout=60):
 def _get_json(url, api_key, timeout=60):
     req = urllib.request.Request(url, method="GET")
     req.add_header("Authorization", f"Bearer {api_key}")
+    req.add_header("User-Agent", UA)
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
 
 def create_task(scene, api_key):
+    prompt = f"{scene['prompt']}\n\nSTYLE: {STYLE}"
+    if not scene.get("keep_text"):
+        prompt += NO_TEXT
     payload = {
         "model": MODEL,
         "input": {
-            "prompt": f"{scene['prompt']}\n\nSTYLE: {STYLE}",
+            "prompt": prompt,
             "output_format": "png",
             "aspect_ratio": "9:16",
             "nsfw_checker": False,
@@ -158,19 +178,10 @@ def poll_task(task_id, api_key, timeout_s=600):
 
 def download(url, dest):
     req = urllib.request.Request(url, method="GET")
+    req.add_header("User-Agent", UA)
+    req.add_header("Accept", "image/*,*/*")
     with urllib.request.urlopen(req, timeout=120) as resp, open(dest, "wb") as f:
         f.write(resp.read())
-
-
-def run_one(scene, api_key):
-    name = scene["id"]
-    task_id = create_task(scene, api_key)
-    print(f"[{name}] task creada: {task_id}", flush=True)
-    url = poll_task(task_id, api_key)
-    dest = os.path.join(OUT_DIR, f"{name}.png")
-    download(url, dest)
-    print(f"[{name}] OK -> {dest}", flush=True)
-    return name, dest
 
 
 def main():
@@ -179,25 +190,52 @@ def main():
         print("ERROR: falta la variable KIE_API_KEY. Ver instrucciones arriba.", file=sys.stderr)
         sys.exit(1)
 
-    os.makedirs(OUT_DIR, exist_ok=True)
-    print(f"Generando {len(SCENES)} imagenes EN PARALELO con Nano Banana...\n", flush=True)
+    # Argumentos opcionales = ids (o prefijos numericos) a regenerar. Sin args: todas.
+    wanted = [a.strip() for a in sys.argv[1:] if a.strip()]
+    scenes = SCENES
+    if wanted:
+        scenes = [s for s in SCENES if s["id"] in wanted or s["id"].split("_")[0] in wanted]
+    if not scenes:
+        print(f"Nada que generar para: {wanted}", file=sys.stderr)
+        sys.exit(1)
 
-    ok, fail = [], []
-    # Todas al mismo tiempo (una por hilo).
-    with futures.ThreadPoolExecutor(max_workers=len(SCENES)) as pool:
-        futs = {pool.submit(run_one, s, api_key): s["id"] for s in SCENES}
+    os.makedirs(OUT_DIR, exist_ok=True)
+    print(f"Generando {len(scenes)} imagenes con Nano Banana...\n", flush=True)
+
+    # 1) Crear todas las tareas EN PARALELO (POST). El createTask soporta la rafaga.
+    created = {}
+    with futures.ThreadPoolExecutor(max_workers=len(scenes)) as pool:
+        futs = {pool.submit(create_task, s, api_key): s["id"] for s in scenes}
         for fut in futures.as_completed(futs):
             name = futs[fut]
             try:
-                fut.result()
-                ok.append(name)
+                created[name] = fut.result()
+                print(f"[{name}] task creada: {created[name]}", flush=True)
             except Exception as e:  # noqa: BLE001
-                fail.append((name, str(e)))
-                print(f"[{name}] ERROR: {e}", file=sys.stderr, flush=True)
+                print(f"[{name}] ERROR creando: {e}", file=sys.stderr, flush=True)
+
+    # 2) Poll + descarga SECUENCIAL (con pausas) para no gatillar el 403 de Cloudflare.
+    ok, fail = [], []
+    for s in scenes:
+        name = s["id"]
+        tid = created.get(name)
+        if not tid:
+            fail.append(name)
+            continue
+        try:
+            url = poll_task(tid, api_key)
+            dest = os.path.join(OUT_DIR, f"{name}.png")
+            download(url, dest)
+            print(f"[{name}] OK -> {dest} ({os.path.getsize(dest)//1024}KB)", flush=True)
+            ok.append(name)
+        except Exception as e:  # noqa: BLE001
+            fail.append(name)
+            print(f"[{name}] ERROR: {e}", file=sys.stderr, flush=True)
+        time.sleep(1.5)
 
     print("\n==== RESUMEN ====")
-    print(f"OK   ({len(ok)}): {', '.join(sorted(ok)) or '-'}")
-    print(f"FALL ({len(fail)}): {', '.join(n for n, _ in fail) or '-'}")
+    print(f"OK   ({len(ok)}): {', '.join(ok) or '-'}")
+    print(f"FALL ({len(fail)}): {', '.join(fail) or '-'}")
     print(f"\nImagenes en: {OUT_DIR}")
     if fail:
         sys.exit(2)
