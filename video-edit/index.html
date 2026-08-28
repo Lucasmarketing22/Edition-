@@ -3,95 +3,56 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1080, height=1908" />
-    <title>Avatar intro — B-roll inserts</title>
+    <title>Avatar intro — B-roll stickman</title>
     <script src="vendor/gsap.min.js"></script>
     <style>
       body { margin: 0; background: #000; }
-      #root {
-        position: relative;
-        width: 1080px;
-        height: 1908px;
-        overflow: hidden;
-        background: #000;
-      }
-      /* Video base: la avatar, protagonista, visible todo el tiempo */
-      #base {
-        position: absolute;
-        inset: 0;
-        width: 1080px;
-        height: 1908px;
-        object-fit: cover;
-        object-position: center;
-      }
-      /* Inserts B-roll: aparecen unos segundos y se van */
+      #root { position: relative; width: 1080px; height: 1908px; overflow: hidden; background: #000; }
+      #base { position: absolute; inset: 0; width: 1080px; height: 1908px; object-fit: cover; object-position: center; }
       .shot {
-        position: absolute;
-        inset: 0;
-        width: 1080px;
-        height: 1908px;
-        object-fit: cover;
-        object-position: center;
-        transform-origin: 50% 50%;
-        will-change: transform, opacity;
+        position: absolute; inset: 0; width: 1080px; height: 1908px;
+        object-fit: cover; object-position: center;
+        transform-origin: 50% 50%; will-change: transform, opacity;
       }
-      /* Overlay de marca arriba-izquierda */
       #brand {
-        position: absolute;
-        top: 54px;
-        left: 54px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 22px;
-        background: rgba(20, 22, 24, 0.62);
-        border-radius: 999px;
-        backdrop-filter: blur(2px);
-        font-family: "Inter", system-ui, -apple-system, sans-serif;
-        color: #fff;
-        font-size: 30px;
-        font-weight: 600;
-        letter-spacing: 0.2px;
-        white-space: nowrap;
+        position: absolute; top: 54px; left: 54px; display: flex; align-items: center; gap: 12px;
+        padding: 14px 22px; background: rgba(20, 22, 24, 0.62); border-radius: 999px; backdrop-filter: blur(2px);
+        font-family: "Inter", system-ui, -apple-system, sans-serif; color: #fff; font-size: 30px; font-weight: 600;
+        letter-spacing: 0.2px; white-space: nowrap;
       }
-      #brand .dot { width: 16px; height: 16px; border-radius: 50%; background: #6fb2ad; flex: 0 0 auto; }
+      #brand .dot { width: 16px; height: 16px; border-radius: 50%; background: #ef4444; flex: 0 0 auto; }
       #fadeout { position: absolute; inset: 0; background: #000; opacity: 0; }
     </style>
   </head>
   <body>
-    <div
-      id="root"
-      data-composition-id="main"
-      data-start="0"
-      data-width="1080"
-      data-height="1908"
-      data-duration="22.37"
-    >
-      <!-- Avatar (video base) visible todo el tiempo -->
+    <div id="root" data-composition-id="main" data-start="0" data-width="1080" data-height="1908" data-duration="22.37">
+      <!-- Avatar (protagonista) visible todo el tiempo -->
       <video id="base" src="assets/base.mp4" data-start="0" data-duration="22.37" data-track-index="0" muted playsinline></video>
       <!-- Voz del original -->
       <audio id="voz" src="assets/base.mp4" data-start="0" data-duration="22.37" data-track-index="1" data-volume="1"></audio>
+      <!-- Musica de fondo (Suno) al 20% -->
+      <audio id="bgm" src="assets/music/bgm.mp3" data-start="0" data-duration="22.37" data-track-index="2" data-volume="0.2"></audio>
 
-      <!-- Inserts B-roll: cada uno aparece ~2s en la palabra clave y se va -->
-      <img id="s0" class="shot clip" src="avatar_images/0_hook_cara.png"      data-start="1.40"  data-duration="1.7" data-track-index="2" />
-      <img id="s1" class="shot clip" src="avatar_images/1_ideas_miedo.png"    data-start="5.60"  data-duration="2.2" data-track-index="2" />
-      <img id="s2" class="shot clip" src="avatar_images/2_avatar_habla.png"   data-start="9.00"  data-duration="2.0" data-track-index="2" />
-      <img id="s3" class="shot clip" src="avatar_images/3_real_vos_decidis.png" data-start="11.70" data-duration="2.2" data-track-index="2" />
-      <img id="s4" class="shot clip" src="avatar_images/4_crece_sin_cara.png" data-start="15.20" data-duration="2.2" data-track-index="2" />
-      <img id="s5" class="shot clip" src="avatar_images/5_cta_comenta.png"    data-start="19.00" data-duration="2.6" data-track-index="2" />
+      <!-- Inserts B-roll: cada uno ~2s en la palabra clave, con transicion distinta -->
+      <img id="s0" class="shot clip" src="avatar_images/0_hook_cara.png"        data-start="1.40"  data-duration="1.7" data-track-index="3" />
+      <img id="s1" class="shot clip" src="avatar_images/1_ideas_miedo.png"      data-start="5.60"  data-duration="2.2" data-track-index="3" />
+      <img id="s2" class="shot clip" src="avatar_images/2_avatar_habla.png"     data-start="9.00"  data-duration="2.0" data-track-index="3" />
+      <img id="s3" class="shot clip" src="avatar_images/3_real_vos_decidis.png" data-start="11.70" data-duration="2.2" data-track-index="3" />
+      <img id="s4" class="shot clip" src="avatar_images/4_crece_sin_cara.png"   data-start="15.20" data-duration="2.2" data-track-index="3" />
+      <img id="s5" class="shot clip" src="avatar_images/5_cta_comenta.png"      data-start="19.00" data-duration="2.6" data-track-index="3" />
 
-      <!-- Efecto de sonido (whoosh) al aparecer cada insert -->
-      <audio id="sfx0" src="assets/whoosh.mp3" data-start="1.40"  data-duration="0.6" data-track-index="5" data-volume="0.6"></audio>
-      <audio id="sfx1" src="assets/whoosh.mp3" data-start="5.60"  data-duration="0.6" data-track-index="5" data-volume="0.6"></audio>
-      <audio id="sfx2" src="assets/whoosh.mp3" data-start="9.00"  data-duration="0.6" data-track-index="5" data-volume="0.6"></audio>
-      <audio id="sfx3" src="assets/whoosh.mp3" data-start="11.70" data-duration="0.6" data-track-index="5" data-volume="0.6"></audio>
-      <audio id="sfx4" src="assets/whoosh.mp3" data-start="15.20" data-duration="0.6" data-track-index="5" data-volume="0.6"></audio>
-      <audio id="sfx5" src="assets/whoosh.mp3" data-start="19.00" data-duration="0.6" data-track-index="5" data-volume="0.6"></audio>
+      <!-- Whoosh suave al aparecer cada insert (volumen bajo) -->
+      <audio id="sfx0" src="assets/whoosh.mp3" data-start="1.40"  data-duration="0.6" data-track-index="6" data-volume="0.25"></audio>
+      <audio id="sfx1" src="assets/whoosh.mp3" data-start="5.60"  data-duration="0.6" data-track-index="6" data-volume="0.25"></audio>
+      <audio id="sfx2" src="assets/whoosh.mp3" data-start="9.00"  data-duration="0.6" data-track-index="6" data-volume="0.25"></audio>
+      <audio id="sfx3" src="assets/whoosh.mp3" data-start="11.70" data-duration="0.6" data-track-index="6" data-volume="0.25"></audio>
+      <audio id="sfx4" src="assets/whoosh.mp3" data-start="15.20" data-duration="0.6" data-track-index="6" data-volume="0.25"></audio>
+      <audio id="sfx5" src="assets/whoosh.mp3" data-start="19.00" data-duration="0.6" data-track-index="6" data-volume="0.25"></audio>
 
       <!-- Overlay de marca -->
       <div id="brand" class="clip" data-start="0" data-duration="22.37" data-track-index="8">
         <span class="dot"></span><span>editado por Claude Code</span>
       </div>
-
       <!-- Fundido a negro final -->
       <div id="fadeout" class="clip" data-start="21.87" data-duration="0.5" data-track-index="9"></div>
     </div>
@@ -99,26 +60,25 @@
     <script>
       const tl = gsap.timeline({ paused: true });
 
-      // Cada insert: pop de entrada (escala + fade) y pop de salida.
+      // Cada insert entra con una transicion DISTINTA (para dinamismo) y sale con fade rapido.
+      // 0: pop / 1: slide desde izq / 2: slide desde der / 3: punch-in zoom / 4: sube desde abajo / 5: spin-pop
       const shots = [
-        { id: "#s0", start: 1.40, dur: 1.7 },
-        { id: "#s1", start: 5.60, dur: 2.2 },
-        { id: "#s2", start: 9.00, dur: 2.0 },
-        { id: "#s3", start: 11.70, dur: 2.2 },
-        { id: "#s4", start: 15.20, dur: 2.2 },
-        { id: "#s5", start: 19.00, dur: 2.6 },
+        { id: "#s0", start: 1.40, dur: 1.7, from: { scale: 0.5, autoAlpha: 0 },              ease: "back.out(1.7)" },
+        { id: "#s1", start: 5.60, dur: 2.2, from: { x: -1120, autoAlpha: 0 },                ease: "power3.out" },
+        { id: "#s2", start: 9.00, dur: 2.0, from: { x: 1120, autoAlpha: 0 },                 ease: "power3.out" },
+        { id: "#s3", start: 11.70, dur: 2.2, from: { scale: 1.8, autoAlpha: 0 },             ease: "power3.out" },
+        { id: "#s4", start: 15.20, dur: 2.2, from: { y: 960, autoAlpha: 0 },                 ease: "power3.out" },
+        { id: "#s5", start: 19.00, dur: 2.6, from: { scale: 0.4, rotation: -12, autoAlpha: 0 }, ease: "back.out(1.8)" },
       ];
       shots.forEach(function (s) {
-        // Entrada: aparece "de atras" creciendo con un pequeño rebote.
-        tl.fromTo(s.id, { scale: 0.55, autoAlpha: 0 },
-          { scale: 1, autoAlpha: 1, duration: 0.35, ease: "back.out(1.6)" }, s.start);
-        // Salida: se achica y desaparece; vuelve la avatar.
-        tl.to(s.id, { scale: 0.92, autoAlpha: 0, duration: 0.28, ease: "power2.in" }, s.start + s.dur - 0.28);
+        const to = { x: 0, y: 0, scale: 1, rotation: 0, autoAlpha: 1, duration: 0.42, ease: s.ease };
+        tl.fromTo(s.id, s.from, to, s.start);
+        // Salida rapida: se achica y desaparece; vuelve la avatar.
+        tl.to(s.id, { scale: 0.9, autoAlpha: 0, duration: 0.28, ease: "power2.in" }, s.start + s.dur - 0.28);
       });
 
       // Overlay de marca: fade-in a los 2s.
       tl.fromTo("#brand", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power1.out" }, 2.0);
-
       // Fundido a negro final.
       tl.fromTo("#fadeout", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power1.in" }, 21.87);
 
