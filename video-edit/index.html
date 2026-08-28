@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1908" />
+    <title>Avatar intro — ilustrado</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      body { margin: 0; background: #000; }
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1908px;
+        overflow: hidden;
+        background: #000;
+      }
+      /* Imagenes full-screen: cubren toda la pantalla */
+      .shot {
+        position: absolute;
+        inset: 0;
+        width: 1080px;
+        height: 1908px;
+        object-fit: cover;
+        object-position: center;
+        will-change: opacity;
+      }
+      /* Overlay de marca arriba-izquierda */
+      #brand {
+        position: absolute;
+        top: 54px;
+        left: 54px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 22px;
+        background: rgba(20, 22, 24, 0.62);
+        border-radius: 999px;
+        backdrop-filter: blur(2px);
+        font-family: "Inter", system-ui, -apple-system, sans-serif;
+        color: #fff;
+        font-size: 30px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        white-space: nowrap;
+      }
+      #brand .dot {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #6fb2ad; /* mismo acento verde-azulado de las ilustraciones */
+        flex: 0 0 auto;
+      }
+      /* Fundido a negro final */
+      #fadeout {
+        position: absolute;
+        inset: 0;
+        background: #000;
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-width="1080"
+      data-height="1908"
+      data-duration="22.37"
+    >
+      <!-- Audio del intro original (la voz). El video no se ve: las ilustraciones lo cubren. -->
+      <audio
+        id="voz"
+        src="assets/base.mp4"
+        data-start="0"
+        data-duration="22.37"
+        data-track-index="0"
+        data-volume="1"
+      ></audio>
+
+      <!-- 6 ilustraciones full-screen, sincronizadas a cada frase (crossfade 0.3s) -->
+      <img id="s0" class="shot clip" src="avatar_images/0_hook_cara.png"      data-start="0.00"  data-duration="3.64"  data-track-index="1" />
+      <img id="s1" class="shot clip" src="avatar_images/1_ideas_miedo.png"    data-start="3.34"  data-duration="5.66"  data-track-index="2" />
+      <img id="s2" class="shot clip" src="avatar_images/2_avatar_habla.png"   data-start="8.70"  data-duration="2.55"  data-track-index="3" />
+      <img id="s3" class="shot clip" src="avatar_images/3_real_vos_decidis.png" data-start="10.95" data-duration="3.86" data-track-index="4" />
+      <img id="s4" class="shot clip" src="avatar_images/4_crece_sin_cara.png" data-start="14.51" data-duration="4.13"  data-track-index="5" />
+      <img id="s5" class="shot clip" src="avatar_images/5_cta_comenta.png"    data-start="18.34" data-duration="4.03"  data-track-index="6" />
+
+      <!-- Overlay de marca: aparece con fade a los 2s y queda toda la intro -->
+      <div id="brand" class="clip" data-start="0" data-duration="22.37" data-track-index="8">
+        <span class="dot"></span><span>editado por Claude Code</span>
+      </div>
+
+      <!-- Fundido a negro final (0.5s) -->
+      <div id="fadeout" class="clip" data-start="21.87" data-duration="0.5" data-track-index="9"></div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // Crossfade de entrada de cada ilustracion (la #0 arranca opaca).
+      tl.fromTo("#s1", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, ease: "power1.out" }, 3.34);
+      tl.fromTo("#s2", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, ease: "power1.out" }, 8.70);
+      tl.fromTo("#s3", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, ease: "power1.out" }, 10.95);
+      tl.fromTo("#s4", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, ease: "power1.out" }, 14.51);
+      tl.fromTo("#s5", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, ease: "power1.out" }, 18.34);
+
+      // Overlay de marca: fade-in a los 2s.
+      tl.fromTo("#brand", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power1.out" }, 2.0);
+
+      // Fundido a negro final.
+      tl.fromTo("#fadeout", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power1.in" }, 21.87);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
