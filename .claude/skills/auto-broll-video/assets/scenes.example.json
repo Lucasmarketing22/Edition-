@@ -1,0 +1,11 @@
+{
+  "style": "Modern clean 'faceless YouTube' stickman cartoon. The SAME recurring character in every image: a simple WHITE stick-figure with thin black stick arms and legs, a round white head with BIG expressive cartoon eyes and an expressive mouth, wearing a bright RED hoodie. Bold clean black outlines, smooth flat vector shading, vibrant and energetic, small motion lines for dynamism, clean light near-white background. Vertical 9:16, subject centered.",
+  "no_text_rule": "IMPORTANT: purely visual illustration. Do NOT write any text, words, letters, numbers, captions or labels anywhere. Buttons and screens are blank. Communicate only by drawing.",
+  "aspect_ratio": "9:16",
+  "scenes": [
+    { "id": "0_hook", "prompt": "The red-hoodie stickman holds up a smartphone to film itself but shyly covers its own face with its other hand; a small glowing red record dot above the phone; motion lines." },
+    { "id": "1_ideas", "prompt": "The red-hoodie stickman stands nervously with a worried face and a sweat drop, its head surrounded by glowing lightbulbs and swirling idea doodles, frozen in front of a big blank rounded push-button." },
+    { "id": "2_avatar", "prompt": "On the left the red-hoodie stickman; a big bold curved arrow points right to a smartphone; inside the phone screen a friendly identical stickman avatar twin with little speech lines from its mouth." },
+    { "id": "5_cta", "keep_text": true, "prompt": "The red-hoodie stickman points up at a rounded speech bubble that contains ONLY the single handwritten lowercase word \"avatar\"; below the bubble a big bold arrow pointing straight down. The ONLY text is the word 'avatar' in the bubble." }
+  ]
+}

@@ -1,0 +1,84 @@
+<!doctype html>
+<!--
+  PLANTILLA de composicion HyperFrames para el skill auto-broll-video.
+  Copiala al index.html del proyecto y ADAPTA:
+   - data-width / data-height / data-duration al video base (ver ffprobe).
+   - la lista de <img class="shot"> (una por imagen) con data-start/data-duration
+     = ventana del insert (~2s centrada en el midpoint de su frase; ver detect_beats.py).
+   - un <audio> de SFX por insert en el mismo data-start.
+   - el array `shots` del <script> con las mismas ventanas y una transicion distinta c/u.
+  Antes: `curl -sSL https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js -o vendor/gsap.min.js`
+  (vendorizar GSAP local: el CDN puede colgar el navegador del render).
+-->
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1908" />
+    <title>Auto B-roll</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      body { margin: 0; background: #000; }
+      #root { position: relative; width: 1080px; height: 1908px; overflow: hidden; background: #000; }
+      #base { position: absolute; inset: 0; width: 1080px; height: 1908px; object-fit: cover; object-position: center; }
+      .shot { position: absolute; inset: 0; width: 1080px; height: 1908px; object-fit: cover;
+              object-position: center; transform-origin: 50% 50%; will-change: transform; backface-visibility: hidden; }
+      #brand { position: absolute; top: 54px; left: 54px; display: flex; align-items: center; gap: 12px;
+               padding: 14px 22px; background: rgba(20,22,24,0.62); border-radius: 999px; backdrop-filter: blur(2px);
+               font-family: "Inter", system-ui, sans-serif; color: #fff; font-size: 30px; font-weight: 600; white-space: nowrap; }
+      #brand .dot { width: 16px; height: 16px; border-radius: 50%; background: #ef4444; flex: 0 0 auto; }
+      #fadeout { position: absolute; inset: 0; background: #000; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <!-- TODO: ajustar data-height y data-duration al video real -->
+    <div id="root" data-composition-id="main" data-start="0" data-width="1080" data-height="1908" data-duration="22.37">
+      <video id="base" src="assets/base.mp4" data-start="0" data-duration="22.37" data-track-index="0" muted playsinline></video>
+      <audio id="voz" src="assets/base.mp4" data-start="0" data-duration="22.37" data-track-index="1" data-volume="1"></audio>
+      <audio id="bgm" src="assets/music/bgm.mp3" data-start="0" data-duration="22.37" data-track-index="2" data-volume="0.15"></audio>
+
+      <!-- TODO: una <img> por imagen. data-start/duration = ventana del insert (~2s). -->
+      <img id="s0" class="shot clip" src="avatar_images/0_hook.png"  data-start="1.40"  data-duration="1.7" data-track-index="3" />
+      <img id="s1" class="shot clip" src="avatar_images/1_beat.png"  data-start="5.60"  data-duration="2.2" data-track-index="3" />
+      <img id="s2" class="shot clip" src="avatar_images/2_beat.png"  data-start="9.00"  data-duration="2.0" data-track-index="3" />
+      <!-- ...agregar las que hagan falta... -->
+
+      <!-- TODO: un SFX por insert, mismo data-start, volumen bajo (0.15) -->
+      <audio id="sfx0" src="assets/sfx/pop.mp3"          data-start="1.40" data-duration="0.72" data-track-index="6" data-volume="0.15"></audio>
+      <audio id="sfx1" src="assets/sfx/whoosh-short.mp3" data-start="5.60" data-duration="0.58" data-track-index="6" data-volume="0.15"></audio>
+      <audio id="sfx2" src="assets/sfx/whoosh.mp3"       data-start="9.00" data-duration="0.58" data-track-index="6" data-volume="0.15"></audio>
+
+      <div id="brand" class="clip" data-start="0" data-duration="22.37" data-track-index="8">
+        <span class="dot"></span><span>editado por Claude Code</span>
+      </div>
+      <div id="fadeout" class="clip" data-start="21.87" data-duration="0.5" data-track-index="9"></div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // Cada insert entra y sale SOLO con movimiento (opacidad 100% siempre).
+      // NO usar autoAlpha/opacity: el crossfade "lava"/difumina la cara del avatar.
+      // Transiciones variadas: pop / slide izq / slide der / flip 3D / subir / spin.
+      const shots = [
+        { id: "#s0", start: 1.40, dur: 1.7, from: { scale: 0 },                out: { scale: 0 },              ease: "back.out(1.7)" },
+        { id: "#s1", start: 5.60, dur: 2.2, from: { x: -1200 },                out: { x: -1200 },              ease: "power3.out" },
+        { id: "#s2", start: 9.00, dur: 2.0, from: { x: 1200 },                 out: { x: 1200 },               ease: "power3.out" },
+        // Mas opciones de transicion para reutilizar/rotar:
+        //   flip 3D:  from:{ rotationY: 90 }   out:{ rotationY: -90 }
+        //   subir:    from:{ y: 1200 }         out:{ y: 1200 }
+        //   spin-pop: from:{ scale: 0, rotation: -12 }  out:{ scale: 0, rotation: 12 }  ease:"back.out(1.8)"
+      ];
+      shots.forEach(function (s) {
+        const to = { x: 0, y: 0, scale: 1, rotation: 0, rotationY: 0, transformPerspective: 900, duration: 0.45, ease: s.ease };
+        tl.fromTo(s.id, s.from, to, s.start);
+        const outTween = Object.assign({ transformPerspective: 900, duration: 0.30, ease: "power2.in" }, s.out);
+        tl.to(s.id, outTween, s.start + s.dur - 0.30);
+      });
+
+      tl.fromTo("#brand", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power1.out" }, 2.0);
+      tl.fromTo("#fadeout", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, ease: "power1.in" }, 21.87);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
