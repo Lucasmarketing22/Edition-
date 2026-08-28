@@ -26,3 +26,7 @@ dist/
 out/
 renders/
 *.log
+
+# Python bytecode
+__pycache__/
+*.pyc
