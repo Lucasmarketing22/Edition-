@@ -12,7 +12,7 @@
       .shot {
         position: absolute; inset: 0; width: 1080px; height: 1908px;
         object-fit: cover; object-position: center;
-        transform-origin: 50% 50%; will-change: transform, opacity;
+        transform-origin: 50% 50%; will-change: transform; backface-visibility: hidden;
       }
       #brand {
         position: absolute; top: 54px; left: 54px; display: flex; align-items: center; gap: 12px;
@@ -60,21 +60,23 @@
     <script>
       const tl = gsap.timeline({ paused: true });
 
-      // Cada insert entra con una transicion DISTINTA (para dinamismo) y sale con fade rapido.
-      // 0: pop / 1: slide desde izq / 2: slide desde der / 3: punch-in zoom / 4: sube desde abajo / 5: spin-pop
+      // Cada insert entra y sale SOLO con movimiento (opacidad siempre 100%), asi la
+      // avatar nunca queda tapada a medias -> se elimina el "desenfoque" del crossfade.
+      // 0: pop / 1: slide izq / 2: slide der / 3: flip 3D / 4: sube / 5: spin-pop
       const shots = [
-        { id: "#s0", start: 1.40, dur: 1.7, from: { scale: 0.5, autoAlpha: 0 },              ease: "back.out(1.7)" },
-        { id: "#s1", start: 5.60, dur: 2.2, from: { x: -1120, autoAlpha: 0 },                ease: "power3.out" },
-        { id: "#s2", start: 9.00, dur: 2.0, from: { x: 1120, autoAlpha: 0 },                 ease: "power3.out" },
-        { id: "#s3", start: 11.70, dur: 2.2, from: { rotationY: 90, autoAlpha: 0 },          ease: "power3.out" },
-        { id: "#s4", start: 15.20, dur: 2.2, from: { y: 960, autoAlpha: 0 },                 ease: "power3.out" },
-        { id: "#s5", start: 19.00, dur: 2.6, from: { scale: 0.4, rotation: -12, autoAlpha: 0 }, ease: "back.out(1.8)" },
+        { id: "#s0", start: 1.40,  dur: 1.7, from: { scale: 0 },                 out: { scale: 0 },                 ease: "back.out(1.7)" },
+        { id: "#s1", start: 5.60,  dur: 2.2, from: { x: -1200 },                 out: { x: -1200 },                 ease: "power3.out" },
+        { id: "#s2", start: 9.00,  dur: 2.0, from: { x: 1200 },                  out: { x: 1200 },                  ease: "power3.out" },
+        { id: "#s3", start: 11.70, dur: 2.2, from: { rotationY: 90 },            out: { rotationY: -90 },           ease: "power3.out" },
+        { id: "#s4", start: 15.20, dur: 2.2, from: { y: 1200 },                  out: { y: 1200 },                  ease: "power3.out" },
+        { id: "#s5", start: 19.00, dur: 2.6, from: { scale: 0, rotation: -12 },  out: { scale: 0, rotation: 12 },   ease: "back.out(1.8)" },
       ];
       shots.forEach(function (s) {
-        const to = { x: 0, y: 0, scale: 1, rotation: 0, rotationY: 0, transformPerspective: 900, autoAlpha: 1, duration: 0.45, ease: s.ease };
+        const to = { x: 0, y: 0, scale: 1, rotation: 0, rotationY: 0, transformPerspective: 900, duration: 0.45, ease: s.ease };
         tl.fromTo(s.id, s.from, to, s.start);
-        // Salida rapida: se achica y desaparece; vuelve la avatar.
-        tl.to(s.id, { scale: 0.9, autoAlpha: 0, duration: 0.28, ease: "power2.in" }, s.start + s.dur - 0.28);
+        // Salida: se va con movimiento (sin fundido), fuera de cuadro / a escala 0.
+        const outTween = Object.assign({ transformPerspective: 900, duration: 0.30, ease: "power2.in" }, s.out);
+        tl.to(s.id, outTween, s.start + s.dur - 0.30);
       });
 
       // Overlay de marca: fade-in a los 2s.
