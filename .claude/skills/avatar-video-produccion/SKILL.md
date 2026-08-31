@@ -96,6 +96,11 @@ Al final del guion agregá:
 - **MONTAJE**: unir los clips con disolvencia suave (0.3–0.4s) o corte limpio; subtítulos
   palabra por palabra (bold, fondo negro semi, palabra activa en color); música de fondo baja
   (~15%); la cara siempre visible. (La edición la ejecuta `auto-broll-video`.)
+- **VELOCIDAD (importante)**: los clips generados por IA salen lentos/arrastrados. Aceleralos
+  siempre **~1.15x** (rango 1.1–1.25x) con **pitch preservado** para que quede dinámico y la voz
+  no suene de ardilla. ffmpeg: video `setpts=PTS/1.15`, audio `atempo=1.15` (atempo mantiene el
+  tono hasta 2x). En hooks se puede ir a 1.2x; en el CTA un poco menos. Reajustá los tiempos de
+  captions/efectos DESPUÉS de acelerar.
 - **POR QUÉ CONVIERTE**: 1-2 frases (ángulo / mecanismo / gatillo).
 
 ## Ejemplo montado (1 clip)
