@@ -96,6 +96,11 @@ Al final del guion agregá:
 - **MONTAJE**: unir los clips con disolvencia suave (0.3–0.4s) o corte limpio; subtítulos
   palabra por palabra (bold, fondo negro semi, palabra activa en color); música de fondo baja
   (~15%); la cara siempre visible. (La edición la ejecuta `auto-broll-video`.)
+- **ESTILO DE EDICIÓN (avatar ads) — SIN imágenes sobrepuestas**: en estos anuncios de avatar
+  NO se agrega B-roll ni ilustraciones encima. El dinamismo lo dan **efectos de cámara** sobre
+  el propio clip: **zoom-in / punch-in** en la palabra clave, **zoom-out / pull-out** para
+  revelar, **snap-zoom** rápido en el CTA y en acentos, y **whip / zoom-through** como transición
+  entre clips. Los zooms se sincronizan a la palabra exacta. Referencia: el reel tipo Bloom.
 - **VELOCIDAD (importante)**: los clips generados por IA salen lentos/arrastrados. Aceleralos
   siempre **~1.15x** (rango 1.1–1.25x) con **pitch preservado** para que quede dinámico y la voz
   no suene de ardilla. ffmpeg: video `setpts=PTS/1.15`, audio `atempo=1.15` (atempo mantiene el
