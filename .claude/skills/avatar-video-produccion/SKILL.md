@@ -52,10 +52,24 @@ Cada prompt de imagen se arma en este orden (una idea por línea):
 ## Prompt de VIDEO (image-to-video, orden)
 1. `Image-to-video from the reference image, keep her exact identity and setting.`
 2. Acción principal + cómo habla (tono), `handheld selfie feel, subtle natural motion`.
-3. Diálogo con acento: `She says, in <acento> Spanish (casual): "<línea>"`.
-4. **Microgestos** concretos anclados a palabras (alza de cejas, parpadeo, media sonrisa,
+3. **Movimiento de cámara en generación** (ver catálogo). Solo movimientos SUTILES aquí
+   (`slow push-in`, `gentle handheld`, `slight drift`); los bruscos deforman la cara.
+4. Diálogo con acento: `She says, in <acento> Spanish (casual): "<línea>"`.
+5. **Microgestos** concretos anclados a palabras (alza de cejas, parpadeo, media sonrisa,
    ladeo de cabeza, mano que sube, guiño, gesto hacia abajo en el CTA).
-5. `Realistic lip-sync, single continuous shot, vertical 9:16, about 10 seconds. No text, no watermark, no distortion.`
+6. `Realistic lip-sync, single continuous shot, vertical 9:16, about 10 seconds. No text, no watermark, no distortion.`
+
+## Efectos de cámara (catálogo)
+Se decide por clip, en DOS capas. Regla: en **generación** solo lo sutil; los efectos potentes
+van en **edición** (control total, sin deformar la cara).
+
+- **Generación (dentro del prompt ②, inglés):** `slow push-in` (acercamiento lento, ideal hook),
+  `slow pull-out` (revela entorno), `gentle handheld shake` (más UGC real), `slight drift/dolly`,
+  `rack focus` (de desenfocado a foco). Frases: `slow cinematic push-in`, `subtle handheld camera shake`.
+- **Edición (post, HyperFrames — skill `auto-broll-video` + `hyperframes-keyframes`):**
+  punch-in/zoom en la palabra clave, `snap zoom` en el CTA, `shake` corto en el hook,
+  Ken Burns (deriva lenta anti-toma-estática), speed ramp en transiciones, whip-pan / zoom-through
+  entre clips.
 
 ## FORMATO DE SALIDA (obligatorio, por clip)
 
@@ -75,6 +89,7 @@ CLIP N · [función] (~10s) — plano: [primerísimo primer plano / plano medio 
 Diálogo: "<línea en el idioma/acento del mercado>"
 Acción + microgestos: <qué hace, anclado a palabras>
 Acento / idioma: <ej. español rioplatense (Argentina)>
+③ Cámara — generación: <sutil, ej. slow push-in> · edición: <efecto potente, ej. punch-in en "<palabra>">
 ```
 
 Al final del guion agregá:
