@@ -101,6 +101,10 @@ Al final del guion agregá:
   el propio clip: **zoom-in / punch-in** en la palabra clave, **zoom-out / pull-out** para
   revelar, **snap-zoom** rápido en el CTA y en acentos, y **whip / zoom-through** como transición
   entre clips. Los zooms se sincronizan a la palabra exacta. Referencia: el reel tipo Bloom.
+  NOTA: los movimientos de cámara pedidos en la generación (prompt ②) **casi nunca se aplican**
+  y los clips salen quietos. No es problema: **TODO el movimiento se hace en POST**. Truco:
+  para simular **cambios de plano/otra cámara** dentro de un clip quieto, cortá el mismo clip en
+  dos encuadres (ancho → recorte/zoom más cerrado) — un punch-cut que parece multicámara.
 - **VELOCIDAD (importante)**: los clips generados por IA salen lentos/arrastrados. Aceleralos
   siempre **~1.15x** (rango 1.1–1.25x) con **pitch preservado** para que quede dinámico y la voz
   no suene de ardilla. ffmpeg: video `setpts=PTS/1.15`, audio `atempo=1.15` (atempo mantiene el
