@@ -49,27 +49,57 @@ Cada prompt de imagen se arma en este orden (una idea por línea):
 5. **Contexto/lugar** — localización + fondo desenfocado (cambia por clip).
 6. **Anclajes** — `No text, no watermark, no distortion.`
 
-## Prompt de VIDEO (image-to-video, orden)
-1. `Image-to-video from the reference image, keep her exact identity and setting.`
-2. Acción principal + cómo habla (tono), `handheld selfie feel, subtle natural motion`.
-3. **Movimiento de cámara en generación** (ver catálogo). Solo movimientos SUTILES aquí
-   (`slow push-in`, `gentle handheld`, `slight drift`); los bruscos deforman la cara.
-4. Diálogo con acento: `She says, in <acento> Spanish (casual): "<línea>"`.
-5. **Microgestos** concretos anclados a palabras (alza de cejas, parpadeo, media sonrisa,
-   ladeo de cabeza, mano que sube, guiño, gesto hacia abajo en el CTA).
-6. `Realistic lip-sync, single continuous shot, vertical 9:16, about 10 seconds. No text, no watermark, no distortion.`
+## Prompt de VIDEO (Flow / Veo 3, orden)
+Generador objetivo: **Google Flow (Veo 3)** con imagen de referencia. Veo SÍ genera cuerpo en
+movimiento, gestos y traslados de cámara — hay que **pedírselo explícito**. El error clásico es
+pedir "talking-head, subtle motion" → sale una persona sentada, quieta, robótica. NO hacer eso.
+
+1. `Using the reference image as the exact character and setting, generate a realistic vertical video.`
+2. **ACCIÓN FÍSICA REAL (lo más importante)** — la persona hace algo con el cuerpo, no solo habla:
+   camina un paso / cambia de peso, gesticula con las manos, **se toca el pelo**, se acomoda los
+   lentes, agarra y sostiene una taza, señala, se inclina hacia la cámara y vuelve. Ver
+   `## MOVIMIENTO REAL` abajo.
+3. **Cómo habla**: `talking to the camera like a casual selfie video, handheld feel`.
+4. **Movimiento de cámara DENTRO de la toma** (la firma del estilo referencia): la cámara
+   **viaja** durante el clip, p.ej. `the camera slowly pushes in from a medium shot to an extreme
+   close-up of her face by the end`, o `slow handheld dolly following her as she moves`. No es
+   estática.
+5. Diálogo con acento: `She says, in <acento> Spanish (casual): "<línea>"`.
+6. **Microgestos** anclados a palabras (alza de cejas, parpadeo, media sonrisa, ladeo de cabeza,
+   mano que sube, gesto hacia abajo en el CTA).
+7. `Realistic skin with pores and subtle imperfections, natural lip-sync, single continuous handheld shot, vertical 9:16, about 8-10 seconds. No text, no watermark, no distortion.`
+
+## MOVIMIENTO REAL (estilo referencia — lo que separa un avatar creíble de uno robot)
+Descubrimiento clave (ref: reel `aivideobootcamp` "Big brands are using AI avatars"): lo que hace
+que un avatar parezca **persona real** NO es la edición — es que **en la generación** el cuerpo se
+mueve y la cámara viaja. Reglas:
+
+- **Una sola Lara** (identidad idéntica en todos los clips vía imagen de referencia). Dos avatares
+  interactuando se ve genial pero mantener las dos caras consistentes es lo más difícil de Flow;
+  por defecto: **una**.
+- **Cada clip = una acción física concreta**, distinta entre clips: `takes a step and leans on the
+  kitchen counter`, `tucks a strand of hair behind her ear`, `picks up a coffee mug and holds it`,
+  `adjusts her glasses`, `walks slowly across the room`, `points down at the screen`, `leans in
+  close like sharing a secret`. Anclá la acción a una palabra del diálogo.
+- **La cámara se mueve dentro del clip.** Firma del estilo: arrancar en plano medio y que la cámara
+  **entre hasta primerísimo primer plano** de la cara al final (como el FACE/HAIR/TEETH/REAL de la
+  referencia). En Flow: `medium shot, the camera slowly and smoothly pushes in to an extreme
+  close-up by the end`.
+- **Respaldo en edición (garantía):** Flow tiene varianza — a veces el traslado de cámara sale
+  débil. No pasa nada: ese viaje **medio → primer plano** lo puedo **garantizar en edición** con un
+  push-in suave sobre cualquier clip. Así: Flow aporta el **movimiento del cuerpo** (que sólo se
+  genera), y la **edición** asegura el **movimiento de cámara**. Si un clip sale demasiado quieto de
+  cuerpo, ese clip se regenera (no se arregla en post).
 
 ## Efectos de cámara (catálogo)
-Se decide por clip, en DOS capas. Regla: en **generación** solo lo sutil; los efectos potentes
-van en **edición** (control total, sin deformar la cara).
+Se decide por clip, en DOS capas. En **generación**: acción del cuerpo + un traslado de cámara.
+Los acentos potentes y sincronizados a la palabra van en **edición**.
 
-- **Generación (dentro del prompt ②, inglés):** `slow push-in` (acercamiento lento, ideal hook),
-  `slow pull-out` (revela entorno), `gentle handheld shake` (más UGC real), `slight drift/dolly`,
-  `rack focus` (de desenfocado a foco). Frases: `slow cinematic push-in`, `subtle handheld camera shake`.
+- **Generación (dentro del prompt ②, inglés):** `slow push-in from medium to close-up`,
+  `handheld dolly following her`, `slight orbit`, `slow pull-out revealing the room`.
 - **Edición (post, HyperFrames — skill `auto-broll-video` + `hyperframes-keyframes`):**
-  punch-in/zoom en la palabra clave, `snap zoom` en el CTA, `shake` corto en el hook,
-  Ken Burns (deriva lenta anti-toma-estática), speed ramp en transiciones, whip-pan / zoom-through
-  entre clips.
+  push-in garantizado medio→primer plano, punch-in/zoom en la palabra clave, `snap zoom` en el CTA,
+  `shake` corto en el hook, Ken Burns, speed ramp, whip-pan / zoom-through entre clips.
 
 ## FORMATO DE SALIDA (obligatorio, por clip)
 
@@ -87,9 +117,10 @@ CLIP N · [función] (~10s) — plano: [primerísimo primer plano / plano medio 
 ```
 
 Diálogo: "<línea en el idioma/acento del mercado>"
-Acción + microgestos: <qué hace, anclado a palabras>
+Acción física: <qué hace con el cuerpo, anclado a una palabra — camina/agarra/se toca el pelo/señala>
+Microgestos: <alza de cejas, parpadeo, media sonrisa, ladeo de cabeza>
 Acento / idioma: <ej. español rioplatense (Argentina)>
-③ Cámara — generación: <sutil, ej. slow push-in> · edición: <efecto potente, ej. punch-in en "<palabra>">
+③ Cámara — generación: <traslado, ej. push-in de medio a primer plano> · edición: <acento, ej. punch-in en "<palabra>">
 ```
 
 Al final del guion agregá:
@@ -100,11 +131,12 @@ Al final del guion agregá:
   NO se agrega B-roll ni ilustraciones encima. El dinamismo lo dan **efectos de cámara** sobre
   el propio clip: **zoom-in / punch-in** en la palabra clave, **zoom-out / pull-out** para
   revelar, **snap-zoom** rápido en el CTA y en acentos, y **whip / zoom-through** como transición
-  entre clips. Los zooms se sincronizan a la palabra exacta. Referencia: el reel tipo Bloom.
-  NOTA: los movimientos de cámara pedidos en la generación (prompt ②) **casi nunca se aplican**
-  y los clips salen quietos. No es problema: **TODO el movimiento se hace en POST**. Truco:
-  para simular **cambios de plano/otra cámara** dentro de un clip quieto, cortá el mismo clip en
-  dos encuadres (ancho → recorte/zoom más cerrado) — un punch-cut que parece multicámara.
+  entre clips. Los zooms se sincronizan a la palabra exacta.
+  DIVISIÓN DE TAREAS: el **movimiento del cuerpo** (caminar, tocarse el pelo, gesticular) SÓLO se
+  logra en la **generación** (Flow) — no se puede agregar en post. El **movimiento de cámara**
+  (push-in medio→primer plano, punch, snap) se **garantiza en edición** aunque Flow no lo haya
+  aplicado. Truco extra: para simular **cambio de plano** dentro de un clip, cortá el mismo clip en
+  dos encuadres (ancho → recorte más cerrado) — un punch-cut que parece multicámara.
 - **VELOCIDAD (importante)**: los clips generados por IA salen lentos/arrastrados. Aceleralos
   siempre **~1.15x** (rango 1.1–1.25x) con **pitch preservado** para que quede dinámico y la voz
   no suene de ardilla. ffmpeg: video `setpts=PTS/1.15`, audio `atempo=1.15` (atempo mantiene el
@@ -128,14 +160,17 @@ No text, no watermark, no distortion.
 
 ② PROMPT VIDEO
 ```txt
-Image-to-video from the reference image, keep her exact identity and setting.
-The same woman talks straight to the camera in a close, confidential tone, handheld selfie feel, subtle natural motion.
+Using the reference image as the exact character and setting, generate a realistic vertical selfie video.
+The same woman holds her phone at arm's length and talks to the camera like a casual selfie video, handheld feel. She is physically active: she raises her free hand into frame with an open "stop" gesture on "pará", then tucks a loose strand of hair behind her ear, and leans in closer to the lens as if sharing a secret.
+Camera: starts as a medium close-up and the camera slowly and smoothly pushes in to an extreme close-up of her face by the end.
 She says, in Argentine Rioplatense Spanish (casual, like a voice note to a friend): "Pará dos segundos. Todo lo que estás viendo ahora mismo no es real. Yo no existo: soy un avatar hecho con inteligencia artificial."
-Micro-gestures: leans slightly toward the camera on "pará"; a small eyebrow raise on "no es real"; one natural blink and a subtle knowing half-smile at the end.
-Realistic lip-sync, single continuous shot, vertical 9:16, about 10 seconds. No text, no watermark, no distortion.
+Micro-gestures: small eyebrow raise on "no es real"; one natural blink and a subtle knowing half-smile at the end.
+Realistic skin with pores and subtle imperfections, natural lip-sync, single continuous handheld shot, vertical 9:16, about 8-10 seconds. No text, no watermark, no distortion.
 ```
 
 Diálogo: "Pará dos segundos. Todo lo que estás viendo ahora mismo no es real. Yo no existo: soy un avatar hecho con inteligencia artificial."
-Acción + microgestos: se acerca en "pará"; alza de cejas en "no es real"; parpadeo + media sonrisa al final.
+Acción física: mano abierta de "pará" → se acomoda el pelo → se acerca al lente.
+Microgestos: alza de cejas en "no es real"; parpadeo + media sonrisa al final.
 Acento / idioma: español rioplatense (Argentina).
+③ Cámara — generación: push-in de medio a primer plano · edición: punch-in en "no es real".
 ```
